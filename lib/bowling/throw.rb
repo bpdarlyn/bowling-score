@@ -1,10 +1,29 @@
 module Bowling
   class Throw
-    attr_reader :score, :throw_number
+    attr_reader :score, :frame, :character
 
-    def initialize(score, throw_number)
-      @score = score
-      @throw_number = throw_number
+    def initialize(character, frame)
+      @character = character
+      @frame = frame
+    end
+
+    def strike?
+      @character == 'X'
+    end
+
+    def score
+      case @character
+      when 'X'
+        10
+      when '/'
+        nil
+      when '-'
+        0
+      when /[0-9]/
+        @character.to_i
+      else
+        0
+      end
     end
   end
 end

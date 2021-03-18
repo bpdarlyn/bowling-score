@@ -1,21 +1,36 @@
 module Bowling
   module Services
     class GameService
-      attr_reader :game, :line, :count, :score
+      attr_reader :game, :throws, :frames, :score
 
       def initialize(game)
         @game = game
-        @count = 0
         @score = 0
+        @throws = []
+        @index_frame = 0
+        @throw_counter = 0
+        @frames = 10.times.to_a.map { Bowling::Frame.new }
+        @current_frame = @frames[@index_frame]
       end
 
       def create_stage
-        @line = Bowling::Line.new
         rolls = game.rolls
         rolls.each do |throw_character|
-          current_frame = fetch_pending_frame.first
-          attach_throw_character(current_frame, throw_character) if current_frame
-          #calculate_frame_score(current_frame) if current_frame
+          build_throw(throw_character)
+        end
+      end
+
+      def build_throw(throw_character)
+        @throw_counter += 1
+        add_throw(Throw.new(throw_character, @frame))
+      end
+
+      def add_throw(new_throw)
+        @current_frame = @frames[@index_frame]
+        if @current_frame
+          @current_frame.push_throw(new_throw)
+          @throws << new_throw
+          score_game
         end
       end
 
@@ -23,39 +38,88 @@ module Bowling
         create_stage
       end
 
-      def fetch_pending_frame
-        line.frames.select { |frame| frame.status == :pending }
+      private
+
+      def last_frame?
+        @index_frame == 9
       end
 
-      def fetch_frame_by_number(frame_number)
-        (line.frames.select { |f| f.frame_number == frame_number })
+      def score_game
+        if last_frame?
+        else
+          evaluate_frame_type
+        end
       end
 
-      def attach_throw_character(frame, throw_character)
-        frame.build_throw(throw_character)
+      def evaluate_frame_type
+        strike?
+        open_or_spare?
+        evaluate_score_frame_type
       end
 
-      def calculate_frame_score(current_frame)
-        mark_as_strike(current_frame)
-        #mark_as_spare(current_frame)
-        #mark_as_open(current_frame)
+      def strike?
+        current_throw = throws.last
+        if @throw_counter == 1 && current_throw.character == 'X'
+          @current_frame.score_type = :strike
+        end
       end
 
-      def mark_as_strike(current_frame)
-        frame_two_position_before = fetch_frame_by_number(current_frame.frame_number - 2).first
-        frame_one_position_before = fetch_frame_by_number(current_frame.frame_number - 1).first
-        if frame_two_position_before && frame_one_position_before &&
-           frame_one_position_before.score_type == :strike && frame_two_position_before.score_type == :strike
-          if current_frame.score_type == :strike && frame_two_position_before.score == 0
-            score1 = frame_one_position_before.throws.map(&:score).reduce(:+)
-            score2 = frame_two_position_before.throws.map(&:score).reduce(:+)
-            score3 = current_frame.throws.map(&:score).reduce(:+)
-            @score += score1 + score2 + score3
-            frame_two_position_before.set_score(@score)
+      def open_or_spare?
+        if @throw_counter == 2
+          if @current_frame.throws.map(&:character).include?('/')
+            @current_frame.score_type = :spare
+          else
+            @current_frame.score_type = :open
           end
         end
       end
 
+      def get_frame_by_position(position)
+        return nil if position < 0
+        frames[position]
+      end
+
+      def next_frame
+        @throw_counter = 0
+        @index_frame += 1
+      end
+
+      def evaluate_score_frame_type
+        frame2 = get_frame_by_position(@index_frame - 2)
+        frame1 = get_frame_by_position(@index_frame - 1)
+        strike_score?(frame2, frame1)
+        spare_score?(frame2, frame1)
+        next_frame
+      end
+
+      def spare_score?(frame2, frame1)
+
+      end
+
+      def strike_score?(frame2, frame1)
+        has_two_before = frame1 && frame2
+        current_throw = throws.last
+        #
+        if has_two_before && frame1.score_type == :strike && frame2.score_type == :strike # XXX
+          if @current_frame.score_type == :strike
+            @score += 30
+          else
+            # XX8
+            pin = throws[throws.length - 1]
+            @score += 20 + pin.score
+          end
+        elsif frame1 && frame1.score_type == :strike && @current_frame.score_type != :strike # X9-
+          @score += 10 + @current_frame.score
+        else
+          p "============BEGIN============"
+          p frame2
+          p frame1
+          p @current_frame
+          p "============END=============="
+        end
+      end
+
     end
+
   end
 end

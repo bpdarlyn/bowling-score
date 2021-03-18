@@ -1,7 +1,6 @@
 require('bowling/constants')
 require('bowling/throw')
 require('bowling/frame')
-require('bowling/line')
 require('bowling/helpers/validator_game_helper')
 require('bowling/services/game_service')
 module Bowling
@@ -22,12 +21,11 @@ module Bowling
         # create service
         service_game = Bowling::Services::GameService.new(self)
         service_game.run
-        service_game.line.frames.each do |frame|
-          p "====FRAME NRO: #{frame.frame_number}"
-          frame.throws.each do |throw|
-            p "THROW SCORE: #{throw.score}"
-          end
-        end
+        #service_game.frames.each_with_index do |frame, index|
+        #  p "FRAME NRO #{index + 1}, SCORE: #{frame.score}"
+        #end
+      else
+        errors
       end
     end
   end
