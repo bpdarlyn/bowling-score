@@ -9,4 +9,5 @@ require "bowling/game"
 all_strike = '5/5/5/5/5/5/5/5/5/5/5'
 #all_strike = '9-9-9-9-9-9-9-9-9-9-'
 game = Bowling::Game.new(all_strike)
-game.run
+score = game.run
+p score

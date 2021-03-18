@@ -7,10 +7,6 @@ module Bowling
       @frame = frame
     end
 
-    def strike?
-      @character == 'X'
-    end
-
     def score
       case @character
       when 'X'
