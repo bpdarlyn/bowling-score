@@ -80,46 +80,60 @@ module Bowling
       end
 
       def next_frame
-        @throw_counter = 0
-        @index_frame += 1
+        if @throw_counter == 1 && throws.last.character == 'X'
+          @throw_counter = 0
+          @index_frame += 1
+        elsif @throw_counter == 2
+          @throw_counter = 0
+          @index_frame += 1
+        end
       end
 
       def evaluate_score_frame_type
         frame2 = get_frame_by_position(@index_frame - 2)
         frame1 = get_frame_by_position(@index_frame - 1)
-        strike_score?(frame2, frame1)
-        spare_score?(frame2, frame1)
+        strike_score(frame2, frame1)
+        strike_spare_or_open_score(frame1)
+        spare_strike_score(frame1)
+        open_score
         next_frame
       end
 
-      def spare_score?(frame2, frame1)
-
-      end
-
-      def strike_score?(frame2, frame1)
-        has_two_before = frame1 && frame2
-        current_throw = throws.last
-        #
-        if has_two_before && frame1.score_type == :strike && frame2.score_type == :strike # XXX
-          if @current_frame.score_type == :strike
-            @score += 30
-          else
-            # XX8
-            pin = throws[throws.length - 1]
-            @score += 20 + pin.score
-          end
-        elsif frame1 && frame1.score_type == :strike && @current_frame.score_type != :strike # X9-
-          @score += 10 + @current_frame.score
-        else
-          p "============BEGIN============"
-          p frame2
-          p frame1
-          p @current_frame
-          p "============END=============="
+      def open_score
+        frame_score = @current_frame.score
+        if @current_frame.score_type == :open && frame_score < 10
+          @score += frame_score
         end
       end
 
-    end
+      def spare_strike_score(frame1)
+        if frame1 && frame1.score_type == :spare && @current_frame.score_type == :strike # X9-
+          @score += frame1.score + @current_frame.score
+        elsif frame1 && frame1.score_type == :spare && !@current_frame.score_type
+          # 7/
+          pin = throws.last
+          @score += 20 + pin.score
+        end
+      end
 
+      def strike_spare_or_open_score(frame1)
+        if frame1 && frame1.score_type == :strike && %i[spare open].include?(@current_frame.score_type) # X9-
+          @score += 10 + @current_frame.score
+        end
+      end
+
+      def strike_score(frame2, frame1)
+        has_two_before = frame1 && frame2
+        if has_two_before && frame1.score_type == :strike && frame2.score_type == :strike # XXX
+          if @current_frame.score_type == :strike
+            @score += 30
+          elsif has_two_before && !@current_frame.score_type
+            # XX8
+            pin = throws.last
+            @score += 20 + pin.score
+          end
+        end
+      end
+    end
   end
 end

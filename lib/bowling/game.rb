@@ -21,6 +21,7 @@ module Bowling
         # create service
         service_game = Bowling::Services::GameService.new(self)
         service_game.run
+        p service_game.score
         #service_game.frames.each_with_index do |frame, index|
         #  p "FRAME NRO #{index + 1}, SCORE: #{frame.score}"
         #end

@@ -7,9 +7,15 @@ module Bowling
       @throws = []
     end
 
-    def strike?
-      throw = throws.first
-      throw && throw.length == 1 && throw.score == 10
+    def filled?
+      case @score_type
+      when :strike
+        throws.length == 1
+      when :open, :spare
+        throws.length == 2
+      else
+        false
+      end
     end
 
     def push_throw(new_throw)
