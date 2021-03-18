@@ -9,15 +9,15 @@ module Bowling
     include Bowling::Helpers::ValidatorGameHelper
 
     attr_reader :status, :errors, :rolls
-    def initialize(string_rolls)
+    def initialize
       @status = nil
       @errors = []
       @response = nil
-      @rolls = string_rolls.split('') || []
-      validate_params
     end
 
-    def run
+    def run(string_rolls)
+      @rolls = string_rolls.split('') || []
+      validate_params
       if status == Bowling::Constants::GameState::STARTING
         # create service
         service_game = Bowling::Services::GameService.new(self)

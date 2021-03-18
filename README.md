@@ -42,3 +42,55 @@ atributos principales
 
 
 
+
+
+
+
+## Combinaciones Posibles para el Cálculo de la puntuación
+
+- Strike + Strike + Strike => XXX 
+- Strike + Strike + Pins => XX2
+- Strike + Spare => X7/
+- Strike + Open => X00
+- Spare + Strike => 7/X
+- Open => 12 | 90 | 12
+- Spare + Pins => 7/8
+
+
+
+## Installation and Run
+
+Requirements
+
+- ruby 2.6.2
+
+### Testing
+
+```bash
+ruby test/bowling_test.rb
+```
+
+```ruby
+def test_exercise_one
+    example = 'XXXXXXXXXXXX'
+    assert_equal(300, @game.run(example))
+  end
+
+  def test_exercise_two
+    example = '9-9-9-9-9-9-9-9-9-9-'
+    assert_equal(90, @game.run(example))
+  end
+
+  def test_exercise_three
+    example = '5/5/5/5/5/5/5/5/5/5/5'
+    assert_equal(150, @game.run(example))
+  end
+
+  def test_all_zero
+    example = '00000000000000000000'
+    assert_equal(0, @game.run(example))
+  end
+
+## All passed! :)
+```
+
