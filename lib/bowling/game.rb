@@ -2,29 +2,27 @@ require('bowling/constants')
 require('bowling/throw')
 require('bowling/frame')
 require('bowling/helpers/validator_game_helper')
+require('bowling/helpers/frame_service_helper')
 require('bowling/services/game_service')
 module Bowling
   class Game
     include Bowling::Helpers::ValidatorGameHelper
 
     attr_reader :status, :errors, :rolls
-    def initialize(string_rolls)
+    def initialize
       @status = nil
       @errors = []
       @response = nil
-      @rolls = string_rolls.split('') || []
-      validate_params
     end
 
-    def run
+    def run(string_rolls)
+      @rolls = string_rolls.split('') || []
+      validate_params
       if status == Bowling::Constants::GameState::STARTING
         # create service
         service_game = Bowling::Services::GameService.new(self)
         service_game.run
-        p service_game.score
-        #service_game.frames.each_with_index do |frame, index|
-        #  p "FRAME NRO #{index + 1}, SCORE: #{frame.score}"
-        #end
+        service_game.score
       else
         errors
       end

@@ -7,17 +7,6 @@ module Bowling
       @throws = []
     end
 
-    def filled?
-      case @score_type
-      when :strike
-        throws.length == 1
-      when :open, :spare
-        throws.length == 2
-      else
-        false
-      end
-    end
-
     def push_throw(new_throw)
       throws.push(new_throw)
     end
