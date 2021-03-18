@@ -31,7 +31,7 @@ module Bowling
                 when '-'
                   0
                 when '/'
-                  10 - ((throws.reject.each_with_index { |t, i| i == index }).map(&:score).reduce(:+) || 0)
+                  calculate_value - ((throws.reject.each_with_index { |t, i| i == index }).map(&:score).reduce(:+) || 0)
                 when /[0-9]/
                   throw.character.to_i
                 else
@@ -41,6 +41,11 @@ module Bowling
       end
       current_score
     end
+
+    def calculate_value
+      throws.length * 5
+    end
+
 
   end
 end
