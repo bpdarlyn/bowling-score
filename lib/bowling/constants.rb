@@ -8,6 +8,6 @@ module Bowling
       # the play was finished successfully
       FINISHED = :finished
     end
-    PATTERN_SYMBOL_FOR_INPUT = %r{[0-9]|-|/}.freeze
+    PATTERN_SYMBOL_FOR_INPUT = %r{[0-9]|-|/|X}.freeze
   end
 end
